@@ -278,6 +278,93 @@
             box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
         }
 
+        .founders-section {
+            position: relative;
+            min-height: 80vh;
+            background: linear-gradient(135deg, #120812 0%, #1a0f1f 100%);
+            padding: 80px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transform: translateY(50px);
+            transition: all 0.8s ease;
+        }
+
+        .founders-section.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .founders-content {
+            max-width: 1200px;
+            width: 100%;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .founders-title {
+            font-size: 2.6rem;
+            color: #8A2BE2;
+            margin-bottom: 16px;
+            text-shadow: 0 0 18px #8A2BE2;
+        }
+
+        .founders-subtitle {
+            font-size: 1.2rem;
+            color: #BFA6FF;
+            margin-bottom: 48px;
+        }
+
+        .founders-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+        }
+
+        .founder-card {
+            background: rgba(138, 43, 226, 0.12);
+            border: 1px solid rgba(138, 43, 226, 0.35);
+            border-radius: 16px;
+            padding: 24px;
+            backdrop-filter: blur(8px);
+            transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+        }
+
+        .founder-card:hover {
+            transform: translateY(-6px);
+            border-color: rgba(138, 43, 226, 0.65);
+            box-shadow: 0 12px 28px rgba(138, 43, 226, 0.28);
+        }
+
+        .avatar {
+            width: 84px;
+            height: 84px;
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            background: radial-gradient(circle at 30% 30%, #8A2BE2, #3d1a59);
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+        }
+
+        .founder-name {
+            font-size: 1.2rem;
+            color: #E8DEFF;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        .founder-role {
+            font-size: 0.95rem;
+            color: #BFA6FF;
+            margin-bottom: 12px;
+        }
+
+        .founder-bio {
+            font-size: 0.95rem;
+            color: #cfcfcf;
+            line-height: 1.6;
+        }
+
         .brand-intro {
             position: relative;
             min-height: 100vh;
@@ -395,7 +482,7 @@
 </head>
 <body>
     <div class="brand">Heimdallr</div>
-    <button class="login-btn">登录</button>
+    <a class="login-btn" href="./login.html">登录</a>
     <div class="title">《链接彼此，探索无限可能》</div>
     <div class="subtitle">Heimdallr</div>
     
@@ -423,7 +510,7 @@
                         <li>透明的收入结算</li>
                         <li>专业的客户评价系统</li>
                     </ul>
-                    <button class="service-btn">开始接单</button>
+                    <a class="service-btn" href="./login.html">开始接单</a>
                 </div>
                 
                 <div class="service-card">
@@ -439,7 +526,40 @@
                         <li>安全的资金托管服务</li>
                         <li>专业的质量保证体系</li>
                     </ul>
-                    <button class="service-btn">发布项目</button>
+                    <a class="service-btn" href="./login.html">发布项目</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="founders-section">
+        <div class="founders-content">
+            <h2 class="founders-title">联合创始人 Co-Founders</h2>
+            <p class="founders-subtitle">连接彼此的桥梁，由这支团队共同守护</p>
+            <div class="founders-grid">
+                <div class="founder-card">
+                    <div class="avatar"></div>
+                    <div class="founder-name">Orson</div>
+                    <div class="founder-role">Co-Founder · Product & Strategy</div>
+                    <div class="founder-bio">专注产品愿景与体验设计，致力于将连接变得更简单、更可信。</div>
+                </div>
+                <div class="founder-card">
+                    <div class="avatar"></div>
+                    <div class="founder-name">Harvey</div>
+                    <div class="founder-role">Co-Founder · Engineering</div>
+                    <div class="founder-bio">热爱工程与系统架构，追求稳定与高效，打造可扩展的技术底座。</div>
+                </div>
+                <div class="founder-card">
+                    <div class="avatar"></div>
+                    <div class="founder-name">Shawn</div>
+                    <div class="founder-role">Co-Founder · Growth</div>
+                    <div class="founder-bio">关注用户增长与生态建设，让价值被更多人看见与使用。</div>
+                </div>
+                <div class="founder-card">
+                    <div class="avatar"></div>
+                    <div class="founder-name">Kelvin</div>
+                    <div class="founder-role">Co-Founder · Operations</div>
+                    <div class="founder-bio">负责合规与运营体系，让平台安全可信、运转高效。</div>
                 </div>
             </div>
         </div>
@@ -578,21 +698,18 @@
             });
         });
 
-        // 服务按钮点击事件
-        document.querySelectorAll('.service-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const card = e.target.closest('.service-card');
-                const title = card.querySelector('.service-title').textContent;
-                
-                if (title === '个人接单') {
-                    alert('即将跳转到个人接单页面...');
-                    // 这里可以添加跳转到个人接单页面的逻辑
-                } else if (title === '企业发布') {
-                    alert('即将跳转到企业发布页面...');
-                    // 这里可以添加跳转到企业发布页面的逻辑
-                }
-            });
-        });
+        // 滚动时显示创始人区块
+        function handleFoundersReveal() {
+            const founders = document.querySelector('.founders-section');
+            if (!founders) return;
+            const rect = founders.getBoundingClientRect();
+            if (rect.top < window.innerHeight * 0.85) {
+                founders.classList.add('visible');
+                window.removeEventListener('scroll', handleFoundersReveal);
+            }
+        }
+        window.addEventListener('scroll', handleFoundersReveal);
+        handleFoundersReveal();
     </script>
 </body>
 </html>
