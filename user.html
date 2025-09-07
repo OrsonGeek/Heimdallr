@@ -1,0 +1,2893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Heimdallr - User Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a0033 50%, #0a0a0a 100%);
+            color: #ffffff;
+            overflow-x: hidden;
+            position: relative;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            background: rgba(10, 10, 10, 0.95);
+            backdrop-filter: blur(15px);
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+            padding: 1rem 2rem;
+        }
+
+        .nav-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        /* Logo区域 */
+        .logo-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            box-shadow: 0 0 20px rgba(138, 43, 226, 0.5);
+            animation: logoGlow 3s ease-in-out infinite alternate;
+            overflow: hidden;
+            background: #000;
+        }
+
+        .logo svg {
+            width: 100%;
+            height: 100%;
+            padding: 5px;
+        }
+
+        .logo::before {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: -5px;
+            right: -5px;
+            bottom: -5px;
+            background: linear-gradient(45deg, #8a2be2, #4b0082, #8a2be2);
+            border-radius: 50%;
+            z-index: -1;
+            animation: logoRotate 10s linear infinite;
+        }
+
+        .brand-name {
+            font-size: 1.8rem;
+            font-weight: bold;
+            background: linear-gradient(45deg, #ffffff, #8a2be2, #ffffff);
+            background-size: 200% 200%;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: titleGlow 3s ease-in-out infinite;
+        }
+
+        /* 导航菜单 */
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-item {
+            color: #b8a9d9;
+            text-decoration: none;
+            font-size: 1.1rem;
+            padding: 0.5rem 1rem;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .nav-item:hover, .nav-item.active {
+            color: #ffffff;
+            background: rgba(138, 43, 226, 0.3);
+        }
+
+        /* 用户头像 */
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8a2be2, #9370db);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-avatar:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.6);
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            margin-top: 100px;
+            display: flex;
+            min-height: calc(100vh - 100px);
+        }
+
+        /* 侧边栏 */
+        .sidebar {
+            width: 300px;
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(10px);
+            border-right: 1px solid rgba(138, 43, 226, 0.2);
+            padding: 2rem;
+            position: fixed;
+            height: calc(100vh - 100px);
+            overflow-y: auto;
+        }
+
+        .user-profile {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .profile-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8a2be2, #9370db);
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+        }
+
+        .username {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .user-bio {
+            color: #b8a9d9;
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .skills-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .skill-tag {
+            background: rgba(138, 43, 226, 0.2);
+            color: #8a2be2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .profile-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .profile-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .profile-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .profile-btn.secondary {
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+        }
+
+        .profile-btn.secondary:hover {
+            background: #8a2be2;
+            color: white;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            flex: 1;
+            margin-left: 300px;
+            padding: 2rem;
+        }
+
+        .page-title {
+            font-size: 2.5rem;
+            color: #ffffff;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* Home页面样式 */
+        .home-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 60vh;
+        }
+
+        .welcome-title {
+            font-size: 3rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .welcome-subtitle {
+            font-size: 1.5rem;
+            color: #b8a9d9;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+            max-width: 1000px;
+        }
+
+        .feature-card {
+            background: rgba(138, 43, 226, 0.1);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 3rem 2rem;
+            text-align: center;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .feature-card:hover::before {
+            left: 100%;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px) scale(1.02);
+            border-color: rgba(138, 43, 226, 0.6);
+            box-shadow: 0 20px 40px rgba(138, 43, 226, 0.3);
+        }
+
+        .feature-icon {
+            font-size: 4rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .feature-title {
+            font-size: 1.8rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .feature-description {
+            color: #b8a9d9;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        .feature-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .feature-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+
+        /* 页面切换动画 */
+        .page-content {
+            display: none;
+            animation: fadeIn 0.5s ease-in;
+        }
+
+        .page-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Earnings页面样式 */
+        .earnings-table-section {
+            margin: 2rem 0;
+        }
+
+        .table-container {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            overflow-x: auto;
+        }
+
+        .earnings-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: #ffffff;
+        }
+
+        .earnings-table th {
+            background: rgba(138, 43, 226, 0.2);
+            color: #8a2be2;
+            padding: 1rem;
+            text-align: left;
+            font-weight: bold;
+            border-bottom: 2px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .earnings-table td {
+            padding: 1rem;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.2);
+        }
+
+        .earnings-table tbody tr {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .earnings-table tbody tr:hover {
+            background: rgba(138, 43, 226, 0.1);
+            transform: translateX(5px);
+        }
+
+        .amount {
+            color: #8a2be2;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .status-badge {
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+
+        .status-badge.completed {
+            background: rgba(34, 197, 94, 0.2);
+            color: #22c55e;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+        }
+
+        .status-badge.pending {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid rgba(251, 191, 36, 0.3);
+        }
+
+        .earnings-summary {
+            margin-top: 2rem;
+        }
+
+        .summary-card {
+            background: rgba(138, 43, 226, 0.1);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 2rem;
+        }
+
+        .summary-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .summary-label {
+            color: #b8a9d9;
+            font-size: 1rem;
+        }
+
+        .summary-value {
+            color: #ffffff;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .summary-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .withdrawal-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .withdrawal-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+
+        /* 模态框样式 */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .modal-content {
+            background: linear-gradient(135deg, #1a0a1a 0%, #2a1a2a 100%);
+            border: 2px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            max-width: 500px;
+            width: 90%;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideIn 0.3s ease;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1.5rem 2rem;
+            border-bottom: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        .modal-header h2 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            color: #b8a9d9;
+            font-size: 2rem;
+            cursor: pointer;
+            transition: color 0.3s ease;
+        }
+
+        .modal-close:hover {
+            color: #ffffff;
+        }
+
+        .modal-body {
+            padding: 2rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            padding: 1.5rem 2rem;
+            border-top: 1px solid rgba(138, 43, 226, 0.3);
+        }
+
+        /* 表单样式 */
+        .withdrawal-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .form-group label {
+            color: #b8a9d9;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            padding: 0.8rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .balance-amount {
+            color: #8a2be2;
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        /* 按钮样式 */
+        .btn-cancel {
+            padding: 0.8rem 1.5rem;
+            background: transparent;
+            border: 2px solid #8a2be2;
+            border-radius: 25px;
+            color: #8a2be2;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background: #8a2be2;
+            color: white;
+        }
+
+        .btn-submit {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        /* 项目详情样式 */
+        .project-details {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .detail-item label {
+            color: #b8a9d9;
+            font-weight: bold;
+        }
+
+        .detail-item span,
+        .detail-item p {
+            color: #ffffff;
+        }
+
+        .detail-item p {
+            margin: 0;
+            line-height: 1.5;
+        }
+
+        /* 动画 */
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-50px) scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        /* 大模态框样式 */
+        .large-modal {
+            max-width: 800px;
+            width: 95%;
+        }
+
+        /* 项目信息样式 */
+        .project-info {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .project-info h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .project-meta {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .project-meta .budget {
+            color: #8a2be2;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .project-meta .deadline {
+            color: #b8a9d9;
+        }
+
+        /* 申请表单样式 */
+        .application-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        /* 项目详情样式 */
+        .project-header {
+            margin-bottom: 2rem;
+        }
+
+        .project-header h3 {
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+        }
+
+        .project-description {
+            line-height: 1.6;
+        }
+
+        .project-description h4 {
+            color: #8a2be2;
+            margin: 1.5rem 0 0.5rem 0;
+            font-size: 1.2rem;
+        }
+
+        .project-description p {
+            color: #cccccc;
+            margin-bottom: 1rem;
+        }
+
+        .project-description ul {
+            color: #cccccc;
+            margin-left: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-description li {
+            margin-bottom: 0.5rem;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .client-info {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            padding: 1rem;
+            margin-top: 1rem;
+        }
+
+        .client-info p {
+            margin-bottom: 0.5rem;
+        }
+
+        /* 无结果消息样式 */
+        .no-results-message {
+            grid-column: 1 / -1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 300px;
+        }
+
+        .no-results-content {
+            text-align: center;
+            color: #b8a9d9;
+        }
+
+        .no-results-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+        }
+
+        .no-results-content h3 {
+            color: #ffffff;
+            margin-bottom: 0.5rem;
+        }
+
+        .no-results-content p {
+            margin-bottom: 2rem;
+        }
+
+        /* Profile页面样式 */
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .profile-section {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .profile-header {
+            display: flex;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+
+        .avatar-upload {
+            position: relative;
+        }
+
+        .profile-avatar-large {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(45deg, #8a2be2, #9370db);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: white;
+            position: relative;
+            box-shadow: 0 0 30px rgba(138, 43, 226, 0.5);
+        }
+
+        .avatar-edit-btn {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background: #8a2be2;
+            border: 2px solid #000;
+            color: white;
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .avatar-edit-btn:hover {
+            background: #4b0082;
+            transform: scale(1.1);
+        }
+
+        .profile-basic-info {
+            flex: 1;
+        }
+
+        .profile-username {
+            color: #ffffff;
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-bio {
+            margin-bottom: 1.5rem;
+        }
+
+        .profile-bio label {
+            color: #b8a9d9;
+            font-weight: bold;
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+
+        .profile-bio textarea {
+            width: 100%;
+            padding: 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .profile-bio textarea:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .profile-contact {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .contact-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .contact-item label {
+            color: #b8a9d9;
+            font-weight: bold;
+            min-width: 100px;
+        }
+
+        .contact-item input,
+        .contact-item select {
+            flex: 1;
+            padding: 0.8rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .contact-item input:focus,
+        .contact-item select:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .section-title {
+            color: #8a2be2;
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 2px solid rgba(138, 43, 226, 0.3);
+            padding-bottom: 0.5rem;
+        }
+
+        /* 技能管理样式 */
+        .skills-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .skills-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .skill-tag.editable {
+            background: rgba(138, 43, 226, 0.3);
+            color: #8a2be2;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .skill-remove {
+            background: none;
+            border: none;
+            color: #ff6b6b;
+            cursor: pointer;
+            font-size: 1.2rem;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+
+        .skill-remove:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .add-skill-container {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .add-skill-container input {
+            flex: 1;
+            padding: 0.8rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 10px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .add-skill-container input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.3);
+        }
+
+        .add-skill-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-skill-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        /* 项目展示样式 */
+        .projects-container {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-item {
+            background: rgba(10, 10, 10, 0.5);
+            border: 1px solid rgba(138, 43, 226, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+        }
+
+        .project-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .project-header h4 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-edit {
+            padding: 0.4rem 0.8rem;
+            background: transparent;
+            border: 1px solid #8a2be2;
+            border-radius: 15px;
+            color: #8a2be2;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-edit:hover {
+            background: #8a2be2;
+            color: white;
+        }
+
+        .btn-delete {
+            padding: 0.4rem 0.8rem;
+            background: transparent;
+            border: 1px solid #ff6b6b;
+            border-radius: 15px;
+            color: #ff6b6b;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-delete:hover {
+            background: #ff6b6b;
+            color: white;
+        }
+
+        .project-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .project-description {
+            color: #cccccc;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .add-project-btn {
+            width: 100%;
+            padding: 1rem;
+            background: transparent;
+            border: 2px dashed rgba(138, 43, 226, 0.5);
+            border-radius: 15px;
+            color: #8a2be2;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .add-project-btn:hover {
+            border-color: #8a2be2;
+            background: rgba(138, 43, 226, 0.1);
+        }
+
+        /* 操作按钮样式 */
+        .profile-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-save {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(138, 43, 226, 0.6);
+        }
+
+        /* 搜索和筛选区 */
+        .search-filter-section {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #8a2be2;
+            box-shadow: 0 0 15px rgba(138, 43, 226, 0.3);
+        }
+
+        .search-btn {
+            padding: 1rem 2rem;
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            border: none;
+            border-radius: 25px;
+            color: white;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-dropdown {
+            padding: 0.8rem 1rem;
+            background: rgba(10, 10, 10, 0.8);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 15px;
+            color: #ffffff;
+            font-size: 1rem;
+        }
+
+        .filter-dropdown:focus {
+            outline: none;
+            border-color: #8a2be2;
+        }
+
+        .budget-slider {
+            flex: 1;
+            margin: 0 1rem;
+        }
+
+        .slider {
+            width: 100%;
+            height: 6px;
+            border-radius: 3px;
+            background: rgba(138, 43, 226, 0.3);
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        .slider::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #8a2be2;
+            cursor: pointer;
+            box-shadow: 0 0 10px rgba(138, 43, 226, 0.5);
+        }
+
+        /* 项目卡片 */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+            gap: 2rem;
+        }
+
+        .project-card {
+            background: rgba(138, 43, 226, 0.1);
+            border: 1px solid rgba(138, 43, 226, 0.3);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(138, 43, 226, 0.1), transparent);
+            transition: left 0.6s ease;
+        }
+
+        .project-card:hover::before {
+            left: 100%;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            border-color: rgba(138, 43, 226, 0.6);
+            box-shadow: 0 15px 40px rgba(138, 43, 226, 0.2);
+        }
+
+        .project-title {
+            font-size: 1.5rem;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            font-weight: bold;
+        }
+
+        .project-skills {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .skill-badge {
+            background: rgba(138, 43, 226, 0.3);
+            color: #8a2be2;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid rgba(138, 43, 226, 0.4);
+        }
+
+        .project-details {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .project-budget {
+            font-size: 1.2rem;
+            color: #8a2be2;
+            font-weight: bold;
+        }
+
+        .project-deadline {
+            color: #b8a9d9;
+            font-size: 0.9rem;
+        }
+
+        .project-actions {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #8a2be2, #4b0082);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid #8a2be2;
+            color: #8a2be2;
+        }
+
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 20px rgba(138, 43, 226, 0.4);
+        }
+
+        .btn-secondary:hover {
+            background: #8a2be2;
+            color: white;
+        }
+
+        /* 动画效果 */
+        @keyframes logoGlow {
+            0% { box-shadow: 0 0 20px rgba(138, 43, 226, 0.5); }
+            100% { box-shadow: 0 0 30px rgba(138, 43, 226, 0.8), 0 0 40px rgba(138, 43, 226, 0.3); }
+        }
+
+        @keyframes logoRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        @keyframes titleGlow {
+            0%, 100% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 100%;
+                position: relative;
+                height: auto;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .search-filter-section {
+                padding: 1rem;
+            }
+
+            .filter-row {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .projects-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .table-container {
+                padding: 1rem;
+                overflow-x: auto;
+            }
+
+            .earnings-table {
+                min-width: 600px;
+            }
+
+            .earnings-table th,
+            .earnings-table td {
+                padding: 0.8rem 0.5rem;
+                font-size: 0.9rem;
+            }
+
+            .summary-card {
+                flex-direction: column;
+                align-items: stretch;
+                text-align: center;
+            }
+
+            .summary-item {
+                margin-bottom: 1rem;
+            }
+
+            .summary-actions {
+                justify-content: center;
+            }
+
+            .modal-content {
+                width: 95%;
+                max-width: none;
+                margin: 1rem;
+            }
+
+            .modal-header,
+            .modal-body,
+            .modal-footer {
+                padding: 1rem;
+            }
+
+            .modal-footer {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .btn-cancel,
+            .btn-submit {
+                width: 100%;
+            }
+
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .profile-basic-info {
+                width: 100%;
+            }
+
+            .contact-item {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 0.5rem;
+            }
+
+            .contact-item label {
+                min-width: auto;
+            }
+
+            .add-skill-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .project-header {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 1rem;
+            }
+
+            .project-actions {
+                justify-content: center;
+            }
+
+            .profile-actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .btn-cancel,
+            .btn-save {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航栏 -->
+    <header class="header">
+        <div class="nav-container">
+            <!-- Logo区域 -->
+            <div class="logo-section">
+                <div class="logo">
+                    <svg viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                        <!-- 人物身体轮廓 -->
+                        <path d="M35 40 L35 100 Q35 110 25 110 Q15 110 15 100 L15 40 Q15 30 25 30 Q35 30 35 40 Z" fill="#8a2be2"/>
+                        
+                        <!-- 头部和头盔 -->
+                        <circle cx="30" cy="35" r="12" fill="#8a2be2"/>
+                        <path d="M18 25 Q18 20 30 20 Q42 20 42 25 L42 35 Q42 40 30 40 Q18 40 18 35 Z" fill="#8a2be2"/>
+                        
+                        <!-- 头盔角饰 -->
+                        <path d="M25 20 Q25 15 30 15 Q35 15 35 20 L35 25 Q35 30 30 30 Q25 30 25 25 Z" fill="#8a2be2"/>
+                        
+                        <!-- 号角 - 更弯曲和自然 -->
+                        <path d="M45 30 Q55 25 65 30 Q70 35 65 40 Q55 45 45 40 Z" fill="#8a2be2"/>
+                        <path d="M42 30 L45 30 L45 40 L42 40 Z" fill="#8a2be2"/>
+                        
+                        <!-- 手臂和手 -->
+                        <path d="M40 45 Q45 42 50 45 Q55 48 50 52 Q45 55 40 52 Z" fill="#8a2be2"/>
+                        
+                        <!-- 长胡须 -->
+                        <path d="M20 35 Q15 40 20 45 Q25 50 30 45 Q35 40 30 35 Z" fill="#8a2be2"/>
+                        <path d="M18 40 Q13 45 18 50 Q23 55 28 50 Q33 45 28 40 Z" fill="#8a2be2"/>
+                        
+                        <!-- 肩部装饰 -->
+                        <path d="M30 45 Q35 42 40 45 Q45 48 40 52 Q35 55 30 52 Z" fill="#8a2be2"/>
+                    </svg>
+                </div>
+                <div class="brand-name">HEIMDALLR</div>
+            </div>
+            
+            <!-- 导航菜单 -->
+            <nav class="nav-menu">
+                <a href="#" class="nav-item active">Home</a>
+                <a href="#" class="nav-item">Find Projects</a>
+                <a href="#" class="nav-item">Earnings</a>
+                <a href="#" class="nav-item">Profile</a>
+            </nav>
+            
+            <!-- 用户头像 -->
+            <div class="user-avatar">JD</div>
+        </div>
+    </header>
+    
+    <!-- 主要内容区域 -->
+    <div class="main-container">
+        <!-- 侧边栏 -->
+        <aside class="sidebar">
+            <div class="user-profile">
+                <div class="profile-avatar">JD</div>
+                <h2 class="username">John Doe</h2>
+                <p class="user-bio">
+                    Full-stack developer with 5+ years of experience in web development. 
+                    Passionate about creating innovative solutions and delivering quality work.
+                </p>
+                
+                <div class="skills-tags">
+                    <span class="skill-tag">React</span>
+                    <span class="skill-tag">Node.js</span>
+                    <span class="skill-tag">Python</span>
+                    <span class="skill-tag">UI/UX</span>
+                    <span class="skill-tag">JavaScript</span>
+                    <span class="skill-tag">MongoDB</span>
+                </div>
+                
+                <div class="profile-actions">
+                    <button class="profile-btn">Edit Profile</button>
+                    <button class="profile-btn secondary">My Projects</button>
+                </div>
+            </div>
+        </aside>
+        
+        <!-- 主内容区 -->
+        <main class="main-content">
+            <!-- Home页面 -->
+            <div id="home-page" class="page-content active">
+                <div class="home-content">
+                    <h1 class="welcome-title">Welcome Back, John!</h1>
+                    <p class="welcome-subtitle">Choose what you'd like to do today</p>
+                    
+                    <div class="feature-grid">
+                        <div class="feature-card" onclick="showPage('find-projects')">
+                            <div class="feature-icon">🔍</div>
+                            <h2 class="feature-title">Find Projects</h2>
+                            <p class="feature-description">
+                                Discover new opportunities that match your skills and interests. 
+                                Browse through thousands of projects from clients worldwide.
+                            </p>
+                            <button class="feature-btn">Explore Projects</button>
+                        </div>
+                        
+                        <div class="feature-card" onclick="showPage('earnings')">
+                            <div class="feature-icon">💰</div>
+                            <h2 class="feature-title">Earnings</h2>
+                            <p class="feature-description">
+                                Track your income, view payment history, and manage your financial 
+                                dashboard. Monitor your growth and achievements.
+                            </p>
+                            <button class="feature-btn">View Earnings</button>
+                        </div>
+                        
+                        <div class="feature-card" onclick="showPage('profile')">
+                            <div class="feature-icon">👤</div>
+                            <h2 class="feature-title">Profile</h2>
+                            <p class="feature-description">
+                                Manage your professional profile, update skills, and showcase 
+                                your portfolio. Make yourself stand out to potential clients.
+                            </p>
+                            <button class="feature-btn">Edit Profile</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Find Projects页面 -->
+            <div id="find-projects-page" class="page-content">
+                <h1 class="page-title">Projects Recommended for You</h1>
+                
+                <!-- 搜索和筛选区 -->
+                <section class="search-filter-section">
+                    <div class="search-bar">
+                        <input type="text" class="search-input" placeholder="Search for projects...">
+                        <button class="search-btn">Search</button>
+                    </div>
+                    
+                    <div class="filter-row">
+                        <select class="filter-dropdown">
+                            <option>All Categories</option>
+                            <option>Design</option>
+                            <option>Writing</option>
+                            <option>Development</option>
+                            <option>Marketing</option>
+                            <option>Data Analysis</option>
+                        </select>
+                        
+                        <div class="budget-slider">
+                            <label style="color: #b8a9d9; font-size: 0.9rem;">Budget Range: $0 - $10,000</label>
+                            <input type="range" class="slider" min="0" max="10000" value="5000">
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- 项目列表 -->
+                <section class="projects-grid">
+                    <div class="project-card">
+                        <h3 class="project-title">E-commerce Website Development</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">React</span>
+                            <span class="skill-badge">Node.js</span>
+                            <span class="skill-badge">MongoDB</span>
+                            <span class="skill-badge">Payment Integration</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$3,500</span>
+                            <span class="project-deadline">Due: Dec 15, 2024</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3 class="project-title">Mobile App UI/UX Design</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">Figma</span>
+                            <span class="skill-badge">UI/UX</span>
+                            <span class="skill-badge">Prototyping</span>
+                            <span class="skill-badge">User Research</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$2,200</span>
+                            <span class="project-deadline">Due: Dec 20, 2024</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3 class="project-title">Data Analysis Dashboard</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">Python</span>
+                            <span class="skill-badge">Data Visualization</span>
+                            <span class="skill-badge">SQL</span>
+                            <span class="skill-badge">Tableau</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$1,800</span>
+                            <span class="project-deadline">Due: Dec 25, 2024</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3 class="project-title">Content Marketing Strategy</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">Content Writing</span>
+                            <span class="skill-badge">SEO</span>
+                            <span class="skill-badge">Social Media</span>
+                            <span class="skill-badge">Analytics</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$1,500</span>
+                            <span class="project-deadline">Due: Jan 5, 2025</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3 class="project-title">API Integration Service</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">REST API</span>
+                            <span class="skill-badge">JavaScript</span>
+                            <span class="skill-badge">AWS</span>
+                            <span class="skill-badge">Docker</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$2,800</span>
+                            <span class="project-deadline">Due: Jan 10, 2025</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                    
+                    <div class="project-card">
+                        <h3 class="project-title">Brand Identity Design</h3>
+                        <div class="project-skills">
+                            <span class="skill-badge">Logo Design</span>
+                            <span class="skill-badge">Branding</span>
+                            <span class="skill-badge">Illustration</span>
+                            <span class="skill-badge">Adobe Creative Suite</span>
+                        </div>
+                        <div class="project-details">
+                            <span class="project-budget">$1,200</span>
+                            <span class="project-deadline">Due: Jan 15, 2025</span>
+                        </div>
+                        <div class="project-actions">
+                            <button class="action-btn btn-primary">Apply Now</button>
+                            <button class="action-btn btn-secondary">View Details</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Earnings页面 -->
+            <div id="earnings-page" class="page-content">
+                <h1 class="page-title">My Earnings</h1>
+                
+                <!-- 筛选条 -->
+                <section class="search-filter-section">
+                    <div class="filter-row">
+                        <select class="filter-dropdown">
+                            <option>All Time</option>
+                            <option>Last 7 Days</option>
+                            <option>Last 30 Days</option>
+                            <option>Last 3 Months</option>
+                            <option>Last Year</option>
+                        </select>
+                        
+                        <select class="filter-dropdown">
+                            <option>All Status</option>
+                            <option>Completed</option>
+                            <option>Pending</option>
+                        </select>
+                    </div>
+                </section>
+                
+                <!-- 收入表格 -->
+                <section class="earnings-table-section">
+                    <div class="table-container">
+                        <table class="earnings-table">
+                            <thead>
+                                <tr>
+                                    <th>Project Title</th>
+                                    <th>Amount</th>
+                                    <th>Status</th>
+                                    <th>Paid On</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Translate</td>
+                                    <td class="amount">$500</td>
+                                    <td><span class="status-badge completed">Done</span></td>
+                                    <td>2025-08-01</td>
+                                </tr>
+                                <tr>
+                                    <td>Logo Design</td>
+                                    <td class="amount">$400</td>
+                                    <td><span class="status-badge completed">Done</span></td>
+                                    <td>2025-08-05</td>
+                                </tr>
+                                <tr>
+                                    <td>Website Development</td>
+                                    <td class="amount">$1,200</td>
+                                    <td><span class="status-badge pending">Pending</span></td>
+                                    <td>-</td>
+                                </tr>
+                                <tr>
+                                    <td>Mobile App Design</td>
+                                    <td class="amount">$800</td>
+                                    <td><span class="status-badge completed">Done</span></td>
+                                    <td>2025-07-28</td>
+                                </tr>
+                                <tr>
+                                    <td>Content Writing</td>
+                                    <td class="amount">$300</td>
+                                    <td><span class="status-badge completed">Done</span></td>
+                                    <td>2025-07-25</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+                
+                <!-- 总计信息 -->
+                <section class="earnings-summary">
+                    <div class="summary-card">
+                        <div class="summary-item">
+                            <span class="summary-label">Total Earned:</span>
+                            <span class="summary-value">$3,200</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="summary-label">Payment Method:</span>
+                            <span class="summary-value">PayPal / Bank</span>
+                        </div>
+                        <div class="summary-actions">
+                            <button class="withdrawal-btn">Request Withdrawal</button>
+                        </div>
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Profile页面 -->
+            <div id="profile-page" class="page-content">
+                <h1 class="page-title">Profile Settings</h1>
+                
+                <div class="profile-container">
+                    <!-- 头像和基本信息 -->
+                    <div class="profile-section">
+                        <div class="profile-header">
+                            <div class="avatar-upload">
+                                <div class="profile-avatar-large">
+                                    <span>JD</span>
+                                    <button class="avatar-edit-btn" onclick="changeAvatar()">📷</button>
+                                </div>
+                            </div>
+                            <div class="profile-basic-info">
+                                <h2 class="profile-username">John Doe</h2>
+                                <div class="profile-bio">
+                                    <label>📝 Short bio:</label>
+                                    <textarea id="user-bio" placeholder="Tell us about yourself...">Full-stack developer with 5+ years of experience in web development. Passionate about creating innovative solutions and delivering quality work.</textarea>
+                                </div>
+                                <div class="profile-contact">
+                                    <div class="contact-item">
+                                        <label>📎 Email:</label>
+                                        <input type="email" id="user-email" value="john.doe@example.com">
+                                    </div>
+                                    <div class="contact-item">
+                                        <label>📎 User Type:</label>
+                                        <select id="user-type">
+                                            <option value="freelancer" selected>Freelancer</option>
+                                            <option value="client">Client</option>
+                                            <option value="both">Both</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 技能管理 -->
+                    <div class="profile-section">
+                        <h3 class="section-title">Skills</h3>
+                        <div class="skills-container">
+                            <div class="skills-list" id="skills-list">
+                                <span class="skill-tag editable" data-skill="Python">
+                                    Python
+                                    <button class="skill-remove" onclick="removeSkill('Python')">×</button>
+                                </span>
+                                <span class="skill-tag editable" data-skill="Excel">
+                                    Excel
+                                    <button class="skill-remove" onclick="removeSkill('Excel')">×</button>
+                                </span>
+                                <span class="skill-tag editable" data-skill="Figma">
+                                    Figma
+                                    <button class="skill-remove" onclick="removeSkill('Figma')">×</button>
+                                </span>
+                                <span class="skill-tag editable" data-skill="React">
+                                    React
+                                    <button class="skill-remove" onclick="removeSkill('React')">×</button>
+                                </span>
+                                <span class="skill-tag editable" data-skill="Node.js">
+                                    Node.js
+                                    <button class="skill-remove" onclick="removeSkill('Node.js')">×</button>
+                                </span>
+                                <span class="skill-tag editable" data-skill="JavaScript">
+                                    JavaScript
+                                    <button class="skill-remove" onclick="removeSkill('JavaScript')">×</button>
+                                </span>
+                            </div>
+                            <div class="add-skill-container">
+                                <input type="text" id="new-skill" placeholder="Add new skill..." maxlength="20">
+                                <button class="add-skill-btn" onclick="addSkill()">+ Add Skill</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 项目展示 -->
+                    <div class="profile-section">
+                        <h3 class="section-title">Projects</h3>
+                        <div class="projects-container" id="projects-container">
+                            <div class="project-item">
+                                <div class="project-header">
+                                    <h4>Translate for E-Commerce Site</h4>
+                                    <div class="project-actions">
+                                        <button class="btn-edit" onclick="editProject(this)">Edit</button>
+                                        <button class="btn-delete" onclick="deleteProject(this)">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="project-skills">
+                                    <span class="skill-badge">Translation</span>
+                                    <span class="skill-badge">Copywriting</span>
+                                </div>
+                                <p class="project-description">Translated full site content from Chinese to English, ensuring cultural accuracy and maintaining brand voice throughout all marketing materials.</p>
+                            </div>
+                            
+                            <div class="project-item">
+                                <div class="project-header">
+                                    <h4>E-commerce Website Development</h4>
+                                    <div class="project-actions">
+                                        <button class="btn-edit" onclick="editProject(this)">Edit</button>
+                                        <button class="btn-delete" onclick="deleteProject(this)">Delete</button>
+                                    </div>
+                                </div>
+                                <div class="project-skills">
+                                    <span class="skill-badge">React</span>
+                                    <span class="skill-badge">Node.js</span>
+                                    <span class="skill-badge">MongoDB</span>
+                                </div>
+                                <p class="project-description">Built a complete e-commerce platform with user authentication, product catalog, shopping cart, and payment integration.</p>
+                            </div>
+                        </div>
+                        <button class="add-project-btn" onclick="addProject()">+ Add Project</button>
+                    </div>
+
+                    <!-- 操作按钮 -->
+                    <div class="profile-actions">
+                        <button class="btn-cancel" onclick="showPage('home')">Cancel</button>
+                        <button class="btn-save" onclick="saveProfile()">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // 页面切换功能
+        function showPage(pageId) {
+            // 隐藏所有页面
+            document.querySelectorAll('.page-content').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // 显示目标页面
+            const targetPage = document.getElementById(pageId + '-page');
+            if (targetPage) {
+                targetPage.classList.add('active');
+            }
+            
+            // 更新导航菜单状态
+            document.querySelectorAll('.nav-item').forEach(nav => {
+                nav.classList.remove('active');
+            });
+            
+            // 根据页面ID设置对应的导航项为活跃状态
+            const navMap = {
+                'home': 'Home',
+                'find-projects': 'Find Projects',
+                'earnings': 'Earnings',
+                'profile': 'Profile'
+            };
+            
+            const activeNavText = navMap[pageId];
+            if (activeNavText) {
+                document.querySelectorAll('.nav-item').forEach(nav => {
+                    if (nav.textContent === activeNavText) {
+                        nav.classList.add('active');
+                    }
+                });
+            }
+        }
+
+        // 导航菜单交互
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', function() {
+                const navText = this.textContent;
+                const pageMap = {
+                    'Home': 'home',
+                    'Find Projects': 'find-projects',
+                    'Earnings': 'earnings',
+                    'Profile': 'profile'
+                };
+                
+                const pageId = pageMap[navText];
+                if (pageId) {
+                    showPage(pageId);
+                }
+            });
+        });
+
+        // 预算滑块交互
+        function initBudgetSlider() {
+            const budgetSlider = document.querySelector('.slider');
+            const budgetLabel = document.querySelector('.budget-slider label');
+            
+            if (budgetSlider && budgetLabel) {
+                budgetSlider.addEventListener('input', function() {
+                    const value = this.value;
+                    budgetLabel.textContent = `Budget Range: $0 - $${parseInt(value).toLocaleString()}`;
+                    // 实时筛选
+                    filterProjects();
+                });
+            }
+        }
+
+        // 初始化筛选功能
+        function initFilterFunctions() {
+            const categoryDropdown = document.querySelector('.filter-dropdown');
+            if (categoryDropdown) {
+                categoryDropdown.addEventListener('change', function() {
+                    filterProjects();
+                });
+            }
+        }
+
+        // 搜索功能
+        function initSearchFunction() {
+            const searchBtn = document.querySelector('.search-btn');
+            const searchInput = document.querySelector('.search-input');
+            
+            if (searchBtn && searchInput) {
+                searchBtn.addEventListener('click', function() {
+                    filterProjects();
+                });
+                
+                // 实时搜索
+                searchInput.addEventListener('input', function() {
+                    filterProjects();
+                });
+            }
+        }
+
+        // 筛选项目
+        function filterProjects() {
+            const searchTerm = document.querySelector('.search-input').value.toLowerCase();
+            const categoryFilter = document.querySelector('.filter-dropdown').value;
+            const budgetFilter = parseFloat(document.querySelector('.slider').value);
+            
+            const projectCards = document.querySelectorAll('.project-card');
+            let visibleCount = 0;
+            
+            projectCards.forEach(card => {
+                const title = card.querySelector('.project-title').textContent.toLowerCase();
+                const skills = Array.from(card.querySelectorAll('.skill-badge')).map(skill => skill.textContent.toLowerCase());
+                const budget = parseFloat(card.querySelector('.project-budget').textContent.replace('$', '').replace(',', ''));
+                
+                let showCard = true;
+                
+                // 搜索词筛选
+                if (searchTerm) {
+                    const matchesSearch = title.includes(searchTerm) || 
+                                        skills.some(skill => skill.includes(searchTerm));
+                    if (!matchesSearch) showCard = false;
+                }
+                
+                // 分类筛选
+                if (categoryFilter !== 'All Categories') {
+                    const categoryMap = {
+                        'Design': ['figma', 'ui/ux', 'prototyping', 'user research', 'logo design', 'branding', 'illustration'],
+                        'Writing': ['content writing', 'seo', 'social media', 'analytics'],
+                        'Development': ['react', 'node.js', 'mongodb', 'payment integration', 'rest api', 'javascript', 'aws', 'docker'],
+                        'Marketing': ['content writing', 'seo', 'social media', 'analytics'],
+                        'Data Analysis': ['python', 'data visualization', 'sql', 'tableau']
+                    };
+                    
+                    const requiredSkills = categoryMap[categoryFilter] || [];
+                    const hasRequiredSkill = requiredSkills.some(skill => 
+                        skills.some(cardSkill => cardSkill.includes(skill))
+                    );
+                    
+                    if (!hasRequiredSkill) showCard = false;
+                }
+                
+                // 预算筛选
+                if (budget > budgetFilter) {
+                    showCard = false;
+                }
+                
+                card.style.display = showCard ? '' : 'none';
+                if (showCard) visibleCount++;
+            });
+            
+            // 显示筛选结果
+            if (visibleCount === 0) {
+                showNoResultsMessage();
+            } else {
+                hideNoResultsMessage();
+            }
+        }
+
+        // 显示无结果消息
+        function showNoResultsMessage() {
+            let noResultsMsg = document.querySelector('.no-results-message');
+            if (!noResultsMsg) {
+                noResultsMsg = document.createElement('div');
+                noResultsMsg.className = 'no-results-message';
+                noResultsMsg.innerHTML = `
+                    <div class="no-results-content">
+                        <div class="no-results-icon">🔍</div>
+                        <h3>No projects found</h3>
+                        <p>Try adjusting your search criteria or filters</p>
+                        <button class="btn-primary" onclick="clearFilters()">Clear Filters</button>
+                    </div>
+                `;
+                document.querySelector('.projects-grid').appendChild(noResultsMsg);
+            }
+            noResultsMsg.style.display = 'block';
+        }
+
+        // 隐藏无结果消息
+        function hideNoResultsMessage() {
+            const noResultsMsg = document.querySelector('.no-results-message');
+            if (noResultsMsg) {
+                noResultsMsg.style.display = 'none';
+            }
+        }
+
+        // 清除筛选
+        function clearFilters() {
+            document.querySelector('.search-input').value = '';
+            document.querySelector('.filter-dropdown').value = 'All Categories';
+            document.querySelector('.slider').value = 10000;
+            document.querySelector('.budget-slider label').textContent = 'Budget Range: $0 - $10,000';
+            
+            // 显示所有项目
+            document.querySelectorAll('.project-card').forEach(card => {
+                card.style.display = '';
+            });
+            
+            hideNoResultsMessage();
+        }
+
+        // 项目卡片点击事件
+        function initProjectCards() {
+            document.querySelectorAll('.action-btn').forEach(btn => {
+                btn.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    if (this.classList.contains('btn-primary')) {
+                        showApplicationModal(this);
+                    } else {
+                        showProjectDetailsModal(this);
+                    }
+                });
+            });
+        }
+
+        // 显示项目申请模态框
+        function showApplicationModal(btn) {
+            const projectCard = btn.closest('.project-card');
+            const projectTitle = projectCard.querySelector('.project-title').textContent;
+            const projectBudget = projectCard.querySelector('.project-budget').textContent;
+            const projectDeadline = projectCard.querySelector('.project-deadline').textContent;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Apply for Project</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="project-info">
+                            <h3>${projectTitle}</h3>
+                            <div class="project-meta">
+                                <span class="budget">${projectBudget}</span>
+                                <span class="deadline">${projectDeadline}</span>
+                            </div>
+                        </div>
+                        
+                        <div class="application-form">
+                            <div class="form-group">
+                                <label for="proposal">Project Proposal:</label>
+                                <textarea id="proposal" placeholder="Describe your approach and why you're the best fit for this project..." required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="timeline">Estimated Timeline:</label>
+                                <input type="text" id="timeline" placeholder="e.g., 2-3 weeks" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="bid-amount">Your Bid Amount:</label>
+                                <input type="number" id="bid-amount" placeholder="Enter your bid amount" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="portfolio">Portfolio/Work Samples:</label>
+                                <input type="url" id="portfolio" placeholder="Link to your portfolio or work samples">
+                            </div>
+                            <div class="form-group">
+                                <label for="questions">Questions for Client:</label>
+                                <textarea id="questions" placeholder="Any questions you have about the project..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Cancel</button>
+                        <button class="btn-submit">Submit Application</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-submit').addEventListener('click', () => submitApplication(modal, projectTitle));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // 显示项目详情模态框
+        function showProjectDetailsModal(btn) {
+            const projectCard = btn.closest('.project-card');
+            const projectTitle = projectCard.querySelector('.project-title').textContent;
+            const projectSkills = Array.from(projectCard.querySelectorAll('.skill-badge')).map(skill => skill.textContent);
+            const projectBudget = projectCard.querySelector('.project-budget').textContent;
+            const projectDeadline = projectCard.querySelector('.project-deadline').textContent;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content large-modal">
+                    <div class="modal-header">
+                        <h2>Project Details</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="project-details">
+                            <div class="project-header">
+                                <h3>${projectTitle}</h3>
+                                <div class="project-meta">
+                                    <span class="budget">${projectBudget}</span>
+                                    <span class="deadline">${projectDeadline}</span>
+                                </div>
+                            </div>
+                            
+                            <div class="project-description">
+                                <h4>Project Description</h4>
+                                <p>We are looking for an experienced developer to help us build a modern e-commerce website. The project involves creating a responsive web application with user authentication, product catalog, shopping cart, and payment integration.</p>
+                                
+                                <h4>Requirements</h4>
+                                <ul>
+                                    <li>Experience with React and Node.js</li>
+                                    <li>Knowledge of MongoDB or similar database</li>
+                                    <li>Payment gateway integration experience</li>
+                                    <li>Responsive design skills</li>
+                                    <li>Good communication skills</li>
+                                </ul>
+                                
+                                <h4>Skills Required</h4>
+                                <div class="skills-list">
+                                    ${projectSkills.map(skill => `<span class="skill-badge">${skill}</span>`).join('')}
+                                </div>
+                                
+                                <h4>Project Timeline</h4>
+                                <p>Expected duration: 4-6 weeks</p>
+                                <p>Start date: Immediate</p>
+                                
+                                <h4>Budget Range</h4>
+                                <p>${projectBudget} (negotiable based on experience)</p>
+                                
+                                <h4>Client Information</h4>
+                                <div class="client-info">
+                                    <p><strong>Company:</strong> TechStart Inc.</p>
+                                    <p><strong>Location:</strong> San Francisco, CA</p>
+                                    <p><strong>Rating:</strong> ⭐⭐⭐⭐⭐ (4.9/5)</p>
+                                    <p><strong>Projects Completed:</strong> 25+</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Close</button>
+                        <button class="btn-primary">Apply Now</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-primary').addEventListener('click', () => {
+                closeModal(modal);
+                showApplicationModal(btn);
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // 提交项目申请
+        function submitApplication(modal, projectTitle) {
+            const proposal = modal.querySelector('#proposal').value;
+            const timeline = modal.querySelector('#timeline').value;
+            const bidAmount = modal.querySelector('#bid-amount').value;
+            const portfolio = modal.querySelector('#portfolio').value;
+            const questions = modal.querySelector('#questions').value;
+            
+            if (!proposal || !timeline || !bidAmount) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // 模拟申请提交
+            alert(`Application submitted successfully!\n\nProject: ${projectTitle}\nYour Bid: $${bidAmount}\nTimeline: ${timeline}\n\nYou will be notified when the client reviews your application.`);
+            closeModal(modal);
+        }
+
+        // 侧边栏按钮事件
+        function initSidebarButtons() {
+            document.querySelectorAll('.profile-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    if (this.textContent === 'Edit Profile') {
+                        showPage('profile');
+                    } else {
+                        alert('Opening your projects...');
+                    }
+                });
+            });
+        }
+
+        // Earnings页面功能
+        function initEarningsPage() {
+            // 提现按钮事件
+            const withdrawalBtn = document.querySelector('.withdrawal-btn');
+            if (withdrawalBtn) {
+                withdrawalBtn.addEventListener('click', function() {
+                    showWithdrawalModal();
+                });
+            }
+
+            // 筛选功能
+            const filterDropdowns = document.querySelectorAll('#earnings-page .filter-dropdown');
+            filterDropdowns.forEach(dropdown => {
+                dropdown.addEventListener('change', function() {
+                    filterEarningsTable();
+                });
+            });
+
+            // 表格行点击事件
+            const tableRows = document.querySelectorAll('.earnings-table tbody tr');
+            tableRows.forEach(row => {
+                row.addEventListener('click', function() {
+                    showProjectDetails(this);
+                });
+            });
+        }
+
+        // 显示提现模态框
+        function showWithdrawalModal() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Request Withdrawal</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="withdrawal-form">
+                            <div class="form-group">
+                                <label>Available Balance:</label>
+                                <span class="balance-amount">$3,200</span>
+                            </div>
+                            <div class="form-group">
+                                <label for="withdrawal-amount">Withdrawal Amount:</label>
+                                <input type="number" id="withdrawal-amount" placeholder="Enter amount" max="3200" min="10">
+                            </div>
+                            <div class="form-group">
+                                <label for="payment-method">Payment Method:</label>
+                                <select id="payment-method">
+                                    <option value="paypal">PayPal</option>
+                                    <option value="bank">Bank Transfer</option>
+                                    <option value="crypto">Cryptocurrency</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="account-details">Account Details:</label>
+                                <input type="text" id="account-details" placeholder="Enter your account information">
+                            </div>
+                            <div class="form-group">
+                                <label for="notes">Notes (Optional):</label>
+                                <textarea id="notes" placeholder="Any additional notes..."></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Cancel</button>
+                        <button class="btn-submit">Submit Request</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-submit').addEventListener('click', () => submitWithdrawal(modal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // 关闭模态框
+        function closeModal(modal) {
+            modal.remove();
+        }
+
+        // 提交提现请求
+        function submitWithdrawal(modal) {
+            const amount = modal.querySelector('#withdrawal-amount').value;
+            const method = modal.querySelector('#payment-method').value;
+            const details = modal.querySelector('#account-details').value;
+            
+            if (!amount || !details) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (parseFloat(amount) > 3200) {
+                alert('Withdrawal amount cannot exceed available balance.');
+                return;
+            }
+            
+            // 模拟提现请求
+            alert(`Withdrawal request submitted!\nAmount: $${amount}\nMethod: ${method}\nYou will receive payment within 3-5 business days.`);
+            closeModal(modal);
+        }
+
+        // 筛选收入表格
+        function filterEarningsTable() {
+            const timeFilter = document.querySelector('#earnings-page .filter-dropdown:first-child').value;
+            const statusFilter = document.querySelector('#earnings-page .filter-dropdown:last-child').value;
+            
+            const rows = document.querySelectorAll('.earnings-table tbody tr');
+            let totalEarned = 0;
+            
+            rows.forEach(row => {
+                const status = row.querySelector('.status-badge').textContent.trim();
+                const amount = parseFloat(row.querySelector('.amount').textContent.replace('$', '').replace(',', ''));
+                const date = row.querySelector('td:last-child').textContent;
+                
+                let showRow = true;
+                
+                // 状态筛选
+                if (statusFilter !== 'All Status') {
+                    if (statusFilter === 'Completed' && status !== 'Done') showRow = false;
+                    if (statusFilter === 'Pending' && status !== 'Pending') showRow = false;
+                }
+                
+                // 时间筛选
+                if (timeFilter !== 'All Time') {
+                    const rowDate = new Date(date);
+                    const now = new Date();
+                    let daysDiff = 0;
+                    
+                    switch (timeFilter) {
+                        case 'Last 7 Days':
+                            daysDiff = 7;
+                            break;
+                        case 'Last 30 Days':
+                            daysDiff = 30;
+                            break;
+                        case 'Last 3 Months':
+                            daysDiff = 90;
+                            break;
+                        case 'Last Year':
+                            daysDiff = 365;
+                            break;
+                    }
+                    
+                    if (daysDiff > 0 && (now - rowDate) > (daysDiff * 24 * 60 * 60 * 1000)) {
+                        showRow = false;
+                    }
+                }
+                
+                row.style.display = showRow ? '' : 'none';
+                
+                if (showRow && status === 'Done') {
+                    totalEarned += amount;
+                }
+            });
+            
+            // 更新总计
+            document.querySelector('.summary-value').textContent = `$${totalEarned.toLocaleString()}`;
+        }
+
+        // 显示项目详情
+        function showProjectDetails(row) {
+            const projectTitle = row.querySelector('td:first-child').textContent;
+            const amount = row.querySelector('.amount').textContent;
+            const status = row.querySelector('.status-badge').textContent;
+            const paidOn = row.querySelector('td:last-child').textContent;
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Project Details</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="project-details">
+                            <div class="detail-item">
+                                <label>Project Title:</label>
+                                <span>${projectTitle}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Amount:</label>
+                                <span class="amount">${amount}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Status:</label>
+                                <span class="status-badge ${status === 'Done' ? 'completed' : 'pending'}">${status}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Paid On:</label>
+                                <span>${paidOn}</span>
+                            </div>
+                            <div class="detail-item">
+                                <label>Project Description:</label>
+                                <p>This project was completed successfully. All deliverables have been submitted and approved by the client.</p>
+                            </div>
+                            <div class="detail-item">
+                                <label>Client Feedback:</label>
+                                <p>"Excellent work! Very professional and delivered on time. Highly recommended!"</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Close</button>
+                        <button class="btn-primary">Download Invoice</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-primary').addEventListener('click', () => {
+                alert('Invoice downloaded successfully!');
+                closeModal(modal);
+            });
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // Profile页面功能
+        function initProfilePage() {
+            // 技能输入框回车事件
+            const newSkillInput = document.getElementById('new-skill');
+            if (newSkillInput) {
+                newSkillInput.addEventListener('keypress', function(e) {
+                    if (e.key === 'Enter') {
+                        addSkill();
+                    }
+                });
+            }
+        }
+
+        // 更换头像
+        function changeAvatar() {
+            alert('Avatar upload feature coming soon! For now, you can contact support to change your avatar.');
+        }
+
+        // 添加技能
+        function addSkill() {
+            const newSkillInput = document.getElementById('new-skill');
+            const skillName = newSkillInput.value.trim();
+            
+            if (!skillName) {
+                alert('Please enter a skill name.');
+                return;
+            }
+            
+            if (skillName.length > 20) {
+                alert('Skill name must be 20 characters or less.');
+                return;
+            }
+            
+            // 检查是否已存在
+            const existingSkills = Array.from(document.querySelectorAll('.skill-tag.editable')).map(skill => skill.dataset.skill);
+            if (existingSkills.includes(skillName)) {
+                alert('This skill already exists.');
+                return;
+            }
+            
+            // 添加新技能
+            const skillsList = document.getElementById('skills-list');
+            const newSkillTag = document.createElement('span');
+            newSkillTag.className = 'skill-tag editable';
+            newSkillTag.dataset.skill = skillName;
+            newSkillTag.innerHTML = `
+                ${skillName}
+                <button class="skill-remove" onclick="removeSkill('${skillName}')">×</button>
+            `;
+            
+            skillsList.appendChild(newSkillTag);
+            newSkillInput.value = '';
+        }
+
+        // 移除技能
+        function removeSkill(skillName) {
+            const skillTag = document.querySelector(`[data-skill="${skillName}"]`);
+            if (skillTag) {
+                skillTag.remove();
+            }
+        }
+
+        // 编辑项目
+        function editProject(btn) {
+            const projectItem = btn.closest('.project-item');
+            const projectTitle = projectItem.querySelector('h4').textContent;
+            const projectDescription = projectItem.querySelector('.project-description').textContent;
+            const projectSkills = Array.from(projectItem.querySelectorAll('.skill-badge')).map(skill => skill.textContent);
+            
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Edit Project</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="edit-project-title">Project Title:</label>
+                            <input type="text" id="edit-project-title" value="${projectTitle}" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-project-skills">Skills (comma-separated):</label>
+                            <input type="text" id="edit-project-skills" value="${projectSkills.join(', ')}" placeholder="e.g., React, Node.js, MongoDB">
+                        </div>
+                        <div class="form-group">
+                            <label for="edit-project-description">Description:</label>
+                            <textarea id="edit-project-description" required>${projectDescription}</textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Cancel</button>
+                        <button class="btn-submit" onclick="saveProjectEdit(this, '${projectTitle}')">Save Changes</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // 保存项目编辑
+        function saveProjectEdit(btn, oldTitle) {
+            const modal = btn.closest('.modal-overlay');
+            const newTitle = modal.querySelector('#edit-project-title').value;
+            const newSkills = modal.querySelector('#edit-project-skills').value;
+            const newDescription = modal.querySelector('#edit-project-description').value;
+            
+            if (!newTitle || !newDescription) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // 更新项目
+            const projectItems = document.querySelectorAll('.project-item');
+            projectItems.forEach(item => {
+                if (item.querySelector('h4').textContent === oldTitle) {
+                    item.querySelector('h4').textContent = newTitle;
+                    item.querySelector('.project-description').textContent = newDescription;
+                    
+                    // 更新技能标签
+                    const skillsContainer = item.querySelector('.project-skills');
+                    skillsContainer.innerHTML = '';
+                    newSkills.split(',').forEach(skill => {
+                        const skillTag = document.createElement('span');
+                        skillTag.className = 'skill-badge';
+                        skillTag.textContent = skill.trim();
+                        skillsContainer.appendChild(skillTag);
+                    });
+                }
+            });
+            
+            alert('Project updated successfully!');
+            closeModal(modal);
+        }
+
+        // 删除项目
+        function deleteProject(btn) {
+            if (confirm('Are you sure you want to delete this project?')) {
+                const projectItem = btn.closest('.project-item');
+                projectItem.remove();
+                alert('Project deleted successfully!');
+            }
+        }
+
+        // 添加项目
+        function addProject() {
+            const modal = document.createElement('div');
+            modal.className = 'modal-overlay';
+            modal.innerHTML = `
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h2>Add New Project</h2>
+                        <button class="modal-close">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label for="new-project-title">Project Title:</label>
+                            <input type="text" id="new-project-title" placeholder="Enter project title" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="new-project-skills">Skills (comma-separated):</label>
+                            <input type="text" id="new-project-skills" placeholder="e.g., React, Node.js, MongoDB">
+                        </div>
+                        <div class="form-group">
+                            <label for="new-project-description">Description:</label>
+                            <textarea id="new-project-description" placeholder="Describe your project..." required></textarea>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn-cancel">Cancel</button>
+                        <button class="btn-submit" onclick="saveNewProject()">Add Project</button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(modal);
+            
+            // 模态框事件
+            modal.querySelector('.modal-close').addEventListener('click', () => closeModal(modal));
+            modal.querySelector('.btn-cancel').addEventListener('click', () => closeModal(modal));
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) closeModal(modal);
+            });
+        }
+
+        // 保存新项目
+        function saveNewProject() {
+            const modal = document.querySelector('.modal-overlay');
+            const title = modal.querySelector('#new-project-title').value;
+            const skills = modal.querySelector('#new-project-skills').value;
+            const description = modal.querySelector('#new-project-description').value;
+            
+            if (!title || !description) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            // 创建新项目元素
+            const projectsContainer = document.getElementById('projects-container');
+            const newProject = document.createElement('div');
+            newProject.className = 'project-item';
+            newProject.innerHTML = `
+                <div class="project-header">
+                    <h4>${title}</h4>
+                    <div class="project-actions">
+                        <button class="btn-edit" onclick="editProject(this)">Edit</button>
+                        <button class="btn-delete" onclick="deleteProject(this)">Delete</button>
+                    </div>
+                </div>
+                <div class="project-skills">
+                    ${skills.split(',').map(skill => `<span class="skill-badge">${skill.trim()}</span>`).join('')}
+                </div>
+                <p class="project-description">${description}</p>
+            `;
+            
+            projectsContainer.appendChild(newProject);
+            alert('Project added successfully!');
+            closeModal(modal);
+        }
+
+        // 保存个人资料
+        function saveProfile() {
+            const bio = document.getElementById('user-bio').value;
+            const email = document.getElementById('user-email').value;
+            const userType = document.getElementById('user-type').value;
+            
+            if (!bio || !email) {
+                alert('Please fill in all required fields.');
+                return;
+            }
+            
+            if (!isValidEmail(email)) {
+                alert('Please enter a valid email address.');
+                return;
+            }
+            
+            // 模拟保存
+            alert('Profile saved successfully!');
+            
+            // 更新侧边栏信息
+            const sidebarBio = document.querySelector('.user-bio');
+            if (sidebarBio) {
+                sidebarBio.textContent = bio;
+            }
+            
+            // 更新技能标签
+            const sidebarSkills = document.querySelector('.skills-tags');
+            if (sidebarSkills) {
+                sidebarSkills.innerHTML = '';
+                const skills = Array.from(document.querySelectorAll('.skill-tag.editable')).map(skill => skill.dataset.skill);
+                skills.forEach(skill => {
+                    const skillTag = document.createElement('span');
+                    skillTag.className = 'skill-tag';
+                    skillTag.textContent = skill;
+                    sidebarSkills.appendChild(skillTag);
+                });
+            }
+        }
+
+        // 验证邮箱格式
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+
+        // 初始化所有功能
+        function init() {
+            initBudgetSlider();
+            initSearchFunction();
+            initFilterFunctions();
+            initProjectCards();
+            initSidebarButtons();
+            initEarningsPage();
+            initProfilePage();
+        }
+
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
