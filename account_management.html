@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heimdallr - 账户管理</title>
+  <style>
+    /* === 基础与主题（与首页 / 用户中心统一的深色 + 紫色系） === */
+    :root{
+      --bg-grad: linear-gradient(135deg,#0a0a0a 0%,#1a0033 50%,#0a0a0a 100%);
+      --glass: rgba(10,10,10,.92);
+      --border: rgba(138,43,226,.30);
+      --accent: #8a2be2; /* 主紫 */
+      --accent2:#4b0082; /* 深紫 */
+      --muted: #b8a9d9;
+      --text:#fff;
+      --card: rgba(138,43,226,.10);
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,system-ui;background:var(--bg-grad);color:var(--text);overflow-x:hidden}
+
+    /* === 顶部导航（复用首页/用户中心结构） === */
+    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--glass);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:1rem 2rem}
+    .nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .logo-section{display:flex;align-items:center;gap:1rem}
+    .brand-name{font-size:1.6rem;font-weight:700;background:linear-gradient(45deg,#fff,var(--accent),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titleGlow 3s ease-in-out infinite}
+    .nav-menu{display:flex;gap:1.25rem;align-items:center}
+    .nav-item{color:var(--muted);text-decoration:none;font-size:1rem;padding:.5rem 1rem;border-radius:25px;transition:.25s}
+    .nav-item:hover,.nav-item.active{color:#fff;background:rgba(138,43,226,.25)}
+    .auth-section{display:flex;gap:.75rem}
+    .btn{padding:.6rem 1.2rem;border-radius:25px;border:2px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:.25s}
+    .btn:hover{background:var(--accent);color:#fff;box-shadow:0 0 18px rgba(138,43,226,.35)}
+    .btn.primary{border:none;background:linear-gradient(45deg,var(--accent),var(--accent2));color:#fff}
+
+    @keyframes titleGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(138,43,226,0))}50%{filter:drop-shadow(0 0 8px rgba(138,43,226,.6))}}
+
+    /* === 页面布局 === */
+    .main{max-width:1200px;margin:110px auto 48px;display:grid;grid-template-columns:320px 1fr;gap:24px;padding:0 16px}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(10px)}
+    .card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:1.1rem;font-weight:700}
+    .card-body{padding:20px}
+
+    .section-title{font-size:.95rem;color:var(--muted);margin:16px 0 8px}
+    .row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .row.single{grid-template-columns:1fr}
+
+    .input,.select,.textarea{width:100%;padding:.9rem 1rem;border-radius:10px;border:1px solid var(--border);background:rgba(255,255,255,.06);color:#fff;outline:none;transition:.2s}
+    .input:focus,.select:focus,.textarea:focus{border-color:rgba(138,43,226,.75);box-shadow:0 0 12px rgba(138,43,226,.35)}
+    .textarea{min-height:96px;resize:vertical}
+
+    .savebar{display:flex;gap:12px;justify-content:flex-end;margin-top:16px}
+    .chip{display:inline-flex;align-items:center;gap:8px;padding:.35rem .7rem;border-radius:20px;border:1px solid var(--border);color:var(--muted)}
+
+    /* 侧栏：账户概览 */
+    .sidebar{position:sticky;top:110px;height:fit-content}
+    .avatar{width:96px;height:96px;border-radius:50%;margin-right:12px;background:linear-gradient(45deg,var(--accent),#9370db);display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;box-shadow:0 0 30px rgba(138,43,226,.5)}
+    .profile-head{display:flex;align-items:center}
+    .username{font-size:1.3rem;font-weight:700}
+    .muted{color:var(--muted);font-size:.9rem}
+    .meta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+    .meta-item{padding:10px 12px;border:1px dashed var(--border);border-radius:12px;color:var(--muted)}
+
+    /* 模块化开关 */
+    .switch{position:relative;width:48px;height:26px}
+    .switch input{opacity:0;width:0;height:0}
+    .slider{position:absolute;cursor:pointer;inset:0;background:rgba(255,255,255,.1);border:1px solid var(--border);transition:.2s;border-radius:999px}
+    .slider:before{content:"";position:absolute;height:20px;width:20px;left:3px;top:2px;background:#fff;border-radius:50%;transition:.2s}
+    input:checked + .slider{background:linear-gradient(45deg,#4CAF50,#45a049);border-color:#45a049}
+    input:checked + .slider:before{transform:translateX(22px)}
+
+    /* 表格（安全设备/支付方式列表） */
+    table{width:100%;border-collapse:collapse;color:#fff}
+    th,td{padding:12px 10px;border-bottom:1px solid var(--border);text-align:left}
+    th{color:var(--muted);font-weight:700}
+    .table-actions{display:flex;gap:8px}
+    .btn.link{border:none;background:transparent;color:var(--muted);padding:0}
+    .btn.link:hover{color:#fff;text-decoration:underline}
+
+    /* Danger Zone */
+    .danger{border-color:rgba(244,67,54,.45);background:rgba(244,67,54,.08)}
+    .danger .card-header{border-bottom-color:rgba(244,67,54,.35)}
+    .btn.danger{border-color:#f44336;color:#ff8a80}
+    .btn.danger:hover{background:#f44336;color:#fff;box-shadow:0 0 18px rgba(244,67,54,.35)}
+
+    /* 响应式 */
+    @media (max-width: 980px){
+      .main{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr}
+      .sidebar{position:static}
+    }
+  </style>
+</head>
+<body>
+  <!-- 统一头部导航：当前页面高亮“用户中心”或新增“账户管理”均可，这里高亮用户中心 -->
+  <header class="header">
+    <div class="nav-container">
+      <div class="logo-section">
+        <div class="brand-name">HEIMDALLR</div>
+      </div>
+      <nav class="nav-menu">
+        <a class="nav-item" href="首页.html">首页</a>
+        <a class="nav-item active" href="user.html">账户管理</a>
+        <a class="nav-item" href="index.html">介绍页</a>
+        <a class="nav-item" href="login.html">登录</a>
+      </nav>
+      <div class="auth-section">
+        <a class="btn" href="login.html">登录</a>
+        <button class="btn primary" onclick="location.href='login.html'">注册</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- 页面主体 -->
+  <main class="main">
+    <!-- 左侧：账户概览 -->
+    <aside class="card sidebar">
+      <div class="card-header">
+        <div class="card-title">账户概览</div>
+      </div>
+      <div class="card-body">
+        <div class="profile-head">
+          <div class="avatar">SX</div>
+          <div>
+            <div class="username">Sun Xiaoheng</div>
+            <div class="muted">ID: 100234 • 自 2025-08 起</div>
+            <div class="chip" title="完成任务">完成 12 单</div>
+          </div>
+        </div>
+        <div class="meta">
+          <div class="meta-item">角色：自由职业者</div>
+          <div class="meta-item">评级：4.8 ★</div>
+          <div class="meta-item">邮箱：sun@example.com</div>
+          <div class="meta-item">地区：CA / Toronto</div>
+        </div>
+        <div class="savebar" style="margin-top:12px">
+          <button class="btn" onclick="location.href='user.html'">返回用户中心</button>
+          <button class="btn primary" onclick="scrollToEl('profile')">编辑资料</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- 右侧：账户管理模块 -->
+    <section style="display:flex;flex-direction:column;gap:24px">
+      <!-- 1. 个人资料 -->
+      <section id="profile" class="card">
+        <div class="card-header">
+          <div class="card-title">个人资料</div>
+          <div class="chip">资料完整度 80%</div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <label class="section-title">显示名称</label>
+              <input class="input" id="displayName" value="Sun Xiaoheng" />
+            </div>
+            <div>
+              <label class="section-title">用户名（唯一）</label>
+              <input class="input" id="username" value="a80_sxh" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label class="section-title">邮箱</label>
+              <input class="input" id="email" value="sun@example.com" />
+            </div>
+            <div>
+              <label class="section-title">所在地区</label>
+              <input class="input" id="region" value="Canada / Toronto" />
+            </div>
+          </div>
+          <div class="row single" style="margin-top:12px">
+            <div>
+              <label class="section-title">个人简介</label>
+              <textarea class="textarea" id="bio" placeholder="一句话介绍你的技能与经验…">数据工程 & 营销分析，从 0-1 设计可复用数据管道与营销自动化。</textarea>
+            </div>
+          </div>
+          <div class="savebar">
+            <button class="btn" onclick="resetProfile()">重置</button>
+            <button class="btn primary" onclick="saveProfile()">保存</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 2. 安全与登录 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">安全与登录</div>
+          <div class="chip">建议：开启二步验证</div>
+        </div>
+        <div class="card-body">
+          <div class="row single">
+            <div style="display:flex;align-items:center;justify-content:space-between;gap:16px">
+              <div>
+                <div class="section-title" style="margin:0 0 4px">两步验证（2FA）</div>
+                <div class="muted">通过短信或验证器应用提高账户安全性</div>
+              </div>
+              <label class="switch">
+                <input id="twofa" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+
+          <div class="section-title" style="margin-top:18px">登录方式</div>
+          <table>
+            <thead>
+              <tr><th>类型</th><th>状态</th><th>最近使用</th><th>操作</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>邮箱 + 密码</td>
+                <td>已启用</td>
+                <td>今天 09:20 (Chrome · Toronto)</td>
+                <td class="table-actions">
+                  <button class="btn link" onclick="openChangePwd()">修改密码</button>
+                </td>
+              </tr>
+              <tr>
+                <td>Google 登录</td>
+                <td>未绑定</td>
+                <td>—</td>
+                <td class="table-actions">
+                  <button class="btn link" onclick="bindProvider('Google')">绑定</button>
+                </td>
+              </tr>
+              <tr>
+                <td>GitHub 登录</td>
+                <td>已绑定</td>
+                <td>2025-09-12</td>
+                <td class="table-actions">
+                  <button class="btn link" onclick="unbindProvider('GitHub')">解绑</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- 3. 通知偏好 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">通知与偏好</div>
+          <div class="chip">可随时更改</div>
+        </div>
+        <div class="card-body">
+          <div class="row single">
+            <div class="muted" style="margin-bottom:12px">选择你希望接收的通知渠道与类型</div>
+          </div>
+          <div class="row">
+            <div>
+              <label class="section-title">渠道</label>
+              <select id="channel" class="select">
+                <option value="email">电子邮件</option>
+                <option value="inapp">站内通知</option>
+                <option value="both" selected>两者都要</option>
+              </select>
+            </div>
+            <div>
+              <label class="section-title">频率</label>
+              <select id="freq" class="select">
+                <option value="realtime" selected>实时</option>
+                <option value="daily">每日汇总</option>
+                <option value="weekly">每周汇总</option>
+              </select>
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label class="section-title">订阅主题</label>
+              <div class="muted" style="margin-bottom:8px">✔ 任务进度、✔ 支付、✔ 系统公告</div>
+              <div class="savebar">
+                <button class="btn" onclick="resetNotify()">重置</button>
+                <button class="btn primary" onclick="saveNotify()">保存</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- 4. 支付方式与结算信息 -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">支付方式与结算</div>
+          <div class="chip">国家/货币: CA / CAD</div>
+        </div>
+        <div class="card-body">
+          <table>
+            <thead>
+              <tr><th>类型</th><th>末尾</th><th>默认</th><th>操作</th></tr>
+            </thead>
+            <tbody id="payoutTable">
+              <tr>
+                <td>Visa</td>
+                <td>**** **** **** 4242</td>
+                <td>是</td>
+                <td class="table-actions">
+                  <button class="btn link" onclick="setDefault(0)">设为默认</button>
+                  <button class="btn link" onclick="removeMethod(0)">移除</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          <div class="savebar">
+            <button class="btn" onclick="addMethod()">+ 添加支付方式</button>
+            <button class="btn primary" onclick="savePayouts()">保存</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 5. 合规 / 身份验证（KYC） -->
+      <section class="card">
+        <div class="card-header">
+          <div class="card-title">身份验证（KYC）</div>
+          <div class="chip" id="kycState">状态：待完善</div>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <label class="section-title">法定姓名</label>
+              <input class="input" id="legalName" placeholder="与证件一致" />
+            </div>
+            <div>
+              <label class="section-title">生日</label>
+              <input class="input" id="dob" type="date" />
+            </div>
+          </div>
+          <div class="row" style="margin-top:12px">
+            <div>
+              <label class="section-title">证件类型</label>
+              <select class="select" id="idType">
+                <option>护照</option>
+                <option>驾照</option>
+                <option>国家身份证</option>
+              </select>
+            </div>
+            <div>
+              <label class="section-title">证件号码</label>
+              <input class="input" id="idNumber" />
+            </div>
+          </div>
+          <div class="row single" style="margin-top:12px">
+            <div>
+              <label class="section-title">证件照片（占位）</label>
+              <div class="muted">后端接 Stripe Connect / PayPal Payouts 前，前端仅做占位与本地校验</div>
+            </div>
+          </div>
+          <div class="savebar">
+            <button class="btn" onclick="resetKYC()">重置</button>
+            <button class="btn primary" onclick="submitKYC()">提交验证</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- 6. 危险操作区 -->
+      <section class="card danger">
+        <div class="card-header">
+          <div class="card-title">危险操作</div>
+          <div class="chip">请谨慎</div>
+        </div>
+        <div class="card-body">
+          <div class="row single">
+            <div class="muted">删除账户将清空个人资料、项目与结算记录（法务要求的数据会按法规保留）。</div>
+          </div>
+          <div class="savebar">
+            <button class="btn danger" onclick="confirmDelete()">删除账户</button>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    function scrollToEl(id){
+      const el = document.getElementById(id);
+      if(!el) return;
+      window.scrollTo({top: el.getBoundingClientRect().top + window.scrollY - 90, behavior:'smooth'});
+    }
+
+    // —— 个人资料 ——
+    const profileDefaults = {
+      displayName: 'Sun Xiaoheng', username: 'a80_sxh', email: 'sun@example.com', region: 'Canada / Toronto',
+      bio: '数据工程 & 营销分析，从 0-1 设计可复用数据管道与营销自动化。'
+    };
+    function resetProfile(){
+      for(const k in profileDefaults){ const el = document.getElementById(k); if(el) el.value = profileDefaults[k]; }
+      toast('已重置为默认资料');
+    }
+    function saveProfile(){ toast('资料已保存'); }
+
+    // —— 安全与登录 ——
+    function openChangePwd(){
+      const pwd = prompt('请输入新密码（示例 DEMO，本地校验）：');
+      if(pwd && pwd.length >= 8){ toast('密码已更新'); } else if(pwd){ toast('密码至少 8 位', 'error'); }
+    }
+    function bindProvider(name){ toast(`已绑定 ${name}`); }
+    function unbindProvider(name){ if(confirm(`确定解绑 ${name} 吗？`)) toast(`已解绑 ${name}`); }
+
+    // —— 通知偏好 ——
+    const notifyDefaults = {channel:'both', freq:'realtime'};
+    function resetNotify(){
+      document.getElementById('channel').value = notifyDefaults.channel;
+      document.getElementById('freq').value = notifyDefaults.freq;
+      toast('通知偏好已重置');
+    }
+    function saveNotify(){ toast('通知偏好已保存'); }
+
+    // —— 支付方式 ——
+    function addMethod(){ toast('添加支付方式（占位，待对接 Stripe/PayPal）'); }
+    function setDefault(i){ toast('已设为默认'); }
+    function removeMethod(i){ if(confirm('确定移除该支付方式吗？')) toast('已移除'); }
+    function savePayouts(){ toast('支付方式已保存'); }
+
+    // —— KYC ——
+    function resetKYC(){
+      ['legalName','dob','idNumber'].forEach(id=>{const el=document.getElementById(id); if(el) el.value='';});
+      document.getElementById('idType').selectedIndex = 0;
+      document.getElementById('kycState').textContent = '状态：待完善';
+      toast('已清空 KYC 表单');
+    }
+    function submitKYC(){
+      const ok = ['legalName','dob','idNumber'].every(id=>{const v=document.getElementById(id).value.trim(); return v.length>0});
+      if(!ok){ toast('请完整填写 KYC 信息', 'error'); return; }
+      document.getElementById('kycState').textContent = '状态：审核中';
+      toast('已提交，等待审核');
+    }
+
+    // —— 危险操作 ——
+    function confirmDelete(){
+      if(confirm('确定永久删除账户？该操作不可撤销。')){ toast('账户已删除（DEMO）', 'error'); }
+    }
+
+    // —— 轻量通知 ——
+    function toast(msg, type='success'){
+      const el = document.createElement('div');
+      el.textContent = msg;
+      el.style.position='fixed'; el.style.top='20px'; el.style.right='20px'; el.style.zIndex=10000;
+      el.style.padding='12px 16px'; el.style.borderRadius='10px'; el.style.color='#fff'; el.style.fontWeight='700';
+      el.style.background = type==='error' ? 'linear-gradient(45deg,#f44336,#d32f2f)' : 'linear-gradient(45deg,#4CAF50,#45a049)';
+      el.style.boxShadow='0 5px 20px rgba(0,0,0,.3)'; el.style.transform='translateX(400px)'; el.style.transition='transform .3s ease';
+      document.body.appendChild(el); requestAnimationFrame(()=>{ el.style.transform='translateX(0)'; });
+      setTimeout(()=>{ el.style.transform='translateX(400px)'; setTimeout(()=> el.remove(), 300); }, 2200);
+    }
+  </script>
+</body>
+</html>
