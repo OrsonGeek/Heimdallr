@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Heimdallr - 了解更多</title>
+  <style>
+    :root{
+      --bg-grad: linear-gradient(135deg,#0a0a0a 0%,#1a0033 50%,#0a0a0a 100%);
+      --glass: rgba(10,10,10,.92);
+      --border: rgba(138,43,226,.30);
+      --accent:#8a2be2; --accent2:#4b0082; --muted:#b8a9d9; --text:#fff; --card: rgba(138,43,226,.10)
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:Arial,system-ui;background:var(--bg-grad);color:var(--text);overflow-x:hidden}
+
+    /* Header */
+    .header{position:fixed;top:0;left:0;right:0;z-index:1000;background:var(--glass);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:1rem 2rem}
+    .nav-container{max-width:1400px;margin:0 auto;display:flex;align-items:center;justify-content:space-between}
+    .brand-name{font-size:1.6rem;font-weight:700;background:linear-gradient(45deg,#fff,var(--accent),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;animation:titleGlow 3s ease-in-out infinite}
+    .nav-menu{display:flex;gap:1.25rem;align-items:center}
+    .nav-item{color:var(--muted);text-decoration:none;font-size:1rem;padding:.5rem 1rem;border-radius:25px;transition:.25s}
+    .nav-item:hover,.nav-item.active{color:#fff;background:rgba(138,43,226,.25)}
+    .auth-section{display:flex;gap:.75rem}
+    .btn{padding:.6rem 1.2rem;border-radius:25px;border:2px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;transition:.25s}
+    .btn:hover{background:var(--accent);color:#fff;box-shadow:0 0 18px rgba(138,43,226,.35)}
+    .btn.primary{border:none;background:linear-gradient(45deg,var(--accent),var(--accent2));color:#fff}
+    @keyframes titleGlow{0%,100%{filter:drop-shadow(0 0 0 rgba(138,43,226,0))}50%{filter:drop-shadow(0 0 8px rgba(138,43,226,.6))}}
+
+    /* Layout */
+    .main{max-width:1200px;margin:110px auto 64px;padding:0 16px;display:flex;flex-direction:column;gap:24px}
+    .hero{display:grid;grid-template-columns:1.2fr .8fr;gap:24px;align-items:center}
+    .hero h1{font-size:2.4rem;line-height:1.15}
+    .hero p{color:var(--muted);margin-top:10px}
+    .hero .cta{display:flex;gap:12px;margin-top:20px}
+
+    .card{background:var(--card);border:1px solid var(--border);border-radius:18px;backdrop-filter:blur(10px)}
+    .card-header{padding:18px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
+    .card-title{font-size:1.05rem;font-weight:700}
+    .card-body{padding:20px}
+
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    .grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .stat{padding:16px;border:1px dashed var(--border);border-radius:14px;color:var(--muted)}
+
+    .badge{display:inline-flex;gap:8px;align-items:center;padding:.35rem .7rem;border-radius:999px;border:1px solid var(--border);color:var(--muted)}
+    .list{display:grid;gap:10px}
+    .list li{list-style:none;padding:10px 12px;border:1px solid var(--border);border-radius:12px;background:rgba(255,255,255,.04)}
+
+    details{border:1px solid var(--border);border-radius:12px;padding:12px 14px;background:rgba(255,255,255,.03)}
+    details+details{margin-top:10px}
+    summary{cursor:pointer;color:#fff;font-weight:700}
+    summary::-webkit-details-marker{display:none}
+    .muted{color:var(--muted)}
+
+    @media (max-width: 980px){
+      .hero{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="nav-container">
+      <div class="brand-name">HEIMDALLR</div>
+      <nav class="nav-menu">
+        <a class="nav-item" href="首页.html">首页</a>
+        <a class="nav-item" href="user.html">用户中心</a>
+        <a class="nav-item active" href="learn-more.html">了解更多</a>
+        <a class="nav-item" href="settings.html">设置</a>
+        <a class="nav-item" href="contact.html">联系我们</a>
+      </nav>
+      <div class="auth-section">
+        <a class="btn" href="login.html">登录</a>
+        <button class="btn primary" onclick="location.href='login.html'">注册</button>
+      </div>
+    </div>
+  </header>
+
+  <main class="main">
+    <!-- Hero -->
+    <section class="hero">
+      <div>
+        <h1>把“可靠协作 + 安全结算”带给每一位创造者与雇主</h1>
+        <p>Heimdallr 是一个双边市场平台：企业可以安全地发布与托管项目，个人可以透明地投标、协作与收款。我们坚持“<strong>最小可信闭环</strong>”的 MVP 原则——从发现 → 合同 → 托管 → 交付 → 评价，每一步都可被审计与回溯。</p>
+        <div class="cta">
+          <a class="btn primary" href="user.html">立即开始</a>
+          <a class="btn" href="contact.html">联系团队</a>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header"><div class="card-title">我们的 3 个承诺</div><span class="badge">MVP 可验证</span></div>
+        <div class="card-body list">
+          <div class="stat"> <b>效率优先</b>：48 小时内获得 ≥3 个合格投标</div>
+          <div class="stat"> <b>安全结算</b>：里程碑托管，符合争议处理流程</div>
+          <div class="stat"> <b>可审计</b>：关键动作留痕，数据可追溯</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- How it works -->
+    <section class="card">
+      <div class="card-header"><div class="card-title">平台如何运作（How it works）</div><span class="badge">B/C 双端</span></div>
+      <div class="card-body grid-2">
+        <div>
+          <h3>企业端（To B）</h3>
+          <ol class="list">
+            <li>发布项目：填写目标、预算、技能要求</li>
+            <li>筛选投标：查看过往评价与样例</li>
+            <li>签订合同：里程碑 + 托管（Escrow）</li>
+            <li>验收与支付：按阶段释放款项</li>
+            <li>评价与复盘：改进下轮合作</li>
+          </ol>
+        </div>
+        <div>
+          <h3>个人端（To C）</h3>
+          <ol class="list">
+            <li>完善档案：技能、作品、期望费率</li>
+            <li>浏览任务：搜索/推荐 + 精准筛选</li>
+            <li>提交方案：报价 + 周期 + 交付物</li>
+            <li>协作交付：文件/沟通留痕</li>
+            <li>获得报酬：托管释放，评价累积</li>
+          </ol>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trust, Safety, Compliance -->
+    <section class="grid-3">
+      <section class="card">
+        <div class="card-header"><div class="card-title">合规与支付</div><span class="badge">Stripe/PayPal</span></div>
+        <div class="card-body">
+          <ul class="list">
+            <li>KYC/AML（身份核验与反洗钱）</li>
+            <li>税务表单（W-8/W-9/T4A 等）占位</li>
+            <li>多币种结算（示例：CAD/USD/CNY）</li>
+          </ul>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-header"><div class="card-title">托管与争议</div><span class="badge">可追溯</span></div>
+        <div class="card-body">
+          <ul class="list">
+            <li>状态机：Funded → In Progress → Submitted → Released</li>
+            <li>整改：Revision（N 次内）</li>
+            <li>争议：证据收集 → 仲裁矩阵 → 裁决</li>
+          </ul>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-header"><div class="card-title">信誉与增长</div><span class="badge">可解释</span></div>
+        <div class="card-body">
+          <ul class="list">
+            <li>评分加权（Bayesian 平滑 + 时间衰减）</li>
+            <li>反作弊（设备指纹/频控/多号关联）</li>
+            <li>推荐：技能重叠 + 文本匹配（TF‑IDF）</li>
+          </ul>
+        </div>
+      </section>
+    </section>
+
+    <!-- Fees & Transparency -->
+    <section class="card">
+      <div class="card-header"><div class="card-title">费用与透明度</div><span class="badge">Beta 建议</span></div>
+      <div class="card-body grid-3">
+        <div class="stat"><b>平台费</b><br>建议 10%（含支付通道成本）</div>
+        <div class="stat"><b>提现费</b><br>固定 $1 或等值</div>
+        <div class="stat"><b>退款/争议</b><br>按仲裁结果部分/全额退回</div>
+      </div>
+    </section>
+
+    <!-- Roadmap -->
+    <section class="card">
+      <div class="card-header"><div class="card-title">路线图（Roadmap）</div><span class="badge">MVP → Beta</span></div>
+      <div class="card-body grid-2">
+        <div>
+          <h3>里程碑（6–8 周）</h3>
+          <ul class="list">
+            <li>Week 1–2：认证/档案、项目 CRUD、投标</li>
+            <li>Week 3–4：合同 + 托管、消息、评价</li>
+            <li>Week 5：后台、争议流程、通知</li>
+            <li>Week 6：稳定性、种子用户、上线</li>
+          </ul>
+        </div>
+        <div>
+          <h3>指标（North Stars）</h3>
+          <ul class="list">
+            <li>48h ≥3 个合格投标</li>
+            <li>填充率 ≥ 40%</li>
+            <li>按时验收 ≥ 85%</li>
+            <li>D+14 争议率 < 3%</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="card">
+      <div class="card-header"><div class="card-title">常见问题（FAQ）</div><span class="badge">持续更新</span></div>
+      <div class="card-body">
+        <details>
+          <summary>你们现在是否对接了真实支付？</summary>
+          <div class="muted">当前为 DEMO 版本，预留 Stripe Connect / PayPal Payouts 接口与占位流程，方便快速切换为真实结算。</div>
+        </details>
+        <details>
+          <summary>如何保障争议处理的公平？</summary>
+          <div class="muted">我们收集消息、文件、里程碑与时间戳等证据，依据预设裁决矩阵判定，并全程留痕可追溯。</div>
+        </details>
+        <details>
+          <summary>平台是否有品类限制？</summary>
+          <div class="muted">MVP 聚焦设计/翻译/编程 3 个垂直，后续可扩展到更多服务类目。</div>
+        </details>
+      </div>
+    </section>
+
+    <!-- Values & CTA -->
+    <section class="grid-2">
+      <section class="card">
+        <div class="card-header"><div class="card-title">我们的价值观</div><span class="badge">透明 · 守信 · 高效</span></div>
+        <div class="card-body">
+          <ul class="list">
+            <li>用户至上：决策以双方价值为核心</li>
+            <li>最小闭环：用最小可行产品验证每一步</li>
+            <li>数据可用：重要操作可回放、可审计</li>
+          </ul>
+        </div>
+      </section>
+      <section class="card">
+        <div class="card-header"><div class="card-title">准备好了吗？</div><span class="badge">立即体验</span></div>
+        <div class="card-body">
+          <p class="muted">现在就创建账户，或与我们聊聊你的想法。</p>
+          <div style="display:flex;gap:12px;margin-top:12px">
+            <a class="btn primary" href="user.html">进入用户中心</a>
+            <a class="btn" href="contact.html">联系我们</a>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+</body>
+</html>
